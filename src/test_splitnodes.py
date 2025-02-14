@@ -1,10 +1,10 @@
 import unittest
 
-from splitnodes import split_nodes_delimiter
+from splitnodes import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 from textnode import TextNode, TextType
 
 
-class TestHTMLNode(unittest.TestCase):
+class TestSplitNodes(unittest.TestCase):
 
     def test_single_node_bold(self):
         bold_node = TextNode("This is a **string with bold** markdown text.", TextType.TEXT)
@@ -42,6 +42,17 @@ class TestHTMLNode(unittest.TestCase):
         italic_node = TextNode("This is a *string with italic markdown text.", TextType.TEXT)
         with self.assertRaises(Exception):
             split_nodes_delimiter([italic_node], '*', TextType.ITALIC)
+
+class ExtractImaagesAndLinks(unittest.TestCase):
+    def test_extract_markdown_images(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        correct = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+        self.assertEqual(correct, extract_markdown_images(text))
+
+    def test_extract_markdown_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        correct = [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        self.assertEqual(correct, extract_markdown_links(text))
 
 if __name__ == "__main__":
     unittest.main()

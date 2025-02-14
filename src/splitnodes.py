@@ -1,3 +1,5 @@
+import re
+
 from textnode import TextNode, TextType
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -88,3 +90,42 @@ def split_into_text_blocks(text, delimited_locations, delimiter):
     
     text_blocks[-1] = text_blocks[-1].rstrip()
     return text_blocks
+
+def extract_markdown_images(text):
+    img_regex_pattern = r"\!(.*?)\)"
+    alt_pattern = r"\[(.*?)]"
+    url_pattern = r"\((.*)"
+    matches = re.findall(img_regex_pattern, text)
+    alt_texts, urls = [], []
+
+    for match in matches:
+        alt_texts.append(re.findall(alt_pattern, match))
+        urls.append(re.findall(url_pattern, match))
+
+    image_info = []
+
+    for i in range(len(alt_texts)):
+        new_image = (alt_texts[i][0], urls[i][0])
+        image_info.append(new_image)
+
+    return image_info
+
+def extract_markdown_links(text):
+    anchor_pattern = r"\[(.*?)]"
+    url_pattern = r"\((.*?)\)"
+
+    anchors = re.findall(anchor_pattern, text)
+    urls = re.findall(url_pattern, text)
+
+    links_info =[]
+    for i in range(len(anchors)):
+        new_image = (anchors[i], urls[i])
+        links_info.append(new_image)
+
+    return links_info
+
+def split_nodes_image(old_nodes):
+    pass
+
+def split_nodes_link(old_nodes):
+    pass
