@@ -1,5 +1,3 @@
-
-
 def markdown_to_blocks(markdown):
     lines = markdown.split('\n')
     blank_lines_indices = []
@@ -25,3 +23,33 @@ def markdown_to_blocks(markdown):
         line_blocks.append(last_block)
 
     return line_blocks
+
+def block_to_block_type(block):
+    if block.startswith("```") and block.endswith("```"):
+        return "code"
+    elif block.startswith("#"):
+        HEADINGS = ('#', '##', '###', '####', '#####', '######')
+        header = block.split(maxsplit=1)
+        if header[0] not in HEADINGS:
+            return "paragraph"
+        return "heading"
+    elif block.startswith(">"):
+        quote_lines = block.splitlines()
+        for line in quote_lines:
+            if not line.startswith('>'):
+                return "paragraph"
+        return "quote"
+    elif block.startswith("* ") or block.startswith("- "):
+        bullet = block[0]
+        unorderd_lines = block.splitlines()
+        for line in unorderd_lines:
+            if not line.startswith(f"{bullet} "):
+                return "paragraph"
+        return "unordered_list"
+    elif block.startswith("1. "):
+        ordered_lines = block.splitlines()
+        for index, line in enumerate(ordered_lines):
+            if not line.startswith(f"{index + 1} "):
+                return "paragraph"
+        return "ordered list"
+    return "paragraph"
