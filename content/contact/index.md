@@ -8,6 +8,3 @@ Give me a call anytime to chat about Tolkien!
 
 **"Váya márië."**
 
-```
-
-```
