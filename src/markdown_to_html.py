@@ -13,6 +13,8 @@ def markdown_to_html_node(markdown):
             block_nodes.append(paragraph_to_html_node(block))
         elif block_type == 'heading':
             block_nodes.append(heading_to_html_node(block))
+        elif block_type == 'code':
+            block_nodes.append(code_to_html_node(block))
         elif block_type == 'quote':
             block_nodes.append(quote_to_html_node(block))
         elif block_type == 'unordered_list':
@@ -41,11 +43,19 @@ def quote_to_html_node(block):
     quote_leafs = []
     lines = block.splitlines()
     for line in lines:
-        text = line.lstrip('>')
+        text = line.lstrip('> ')
         child_nodes = text_to_children(text)
         quote_leafs.extend(child_nodes)
     quote_block = ParentNode('blockquote', quote_leafs)
     return quote_block
+
+def code_to_html_node(block):
+    if not block.startswith("```") or not block.endswith("```"):
+        raise ValueError("invalid code block")
+    text = block[4:-3]
+    children = text_to_children(text)
+    code = ParentNode("code", children)
+    return ParentNode("pre", [code])
 
 def unordered_list_to_html_node(block):
     lines = block.splitlines()

@@ -4,7 +4,7 @@ def markdown_to_blocks(markdown):
     line_blocks = []
 
     for i in range(len(lines)):
-        if not lines[i]:
+        if not lines[i].strip():
             blank_lines_indices.append(i)
 
     current_line_index = 0
@@ -14,13 +14,15 @@ def markdown_to_blocks(markdown):
             continue
         block = "\n".join(lines[current_line_index:index])
         block = block.strip()
-        line_blocks.append(block)
+        if block:
+            line_blocks.append(block)
         current_line_index = index + 1
     
-    if current_line_index != len(lines) - 1:
+    if current_line_index < len(lines):
         last_block = "\n".join(lines[current_line_index:])
         last_block = last_block.strip()
-        line_blocks.append(last_block)
+        if last_block:
+            line_blocks.append(last_block)
 
     return line_blocks
 
@@ -49,7 +51,7 @@ def block_to_block_type(block):
     elif block.startswith("1. "):
         ordered_lines = block.splitlines()
         for index, line in enumerate(ordered_lines):
-            if not line.startswith(f"{index + 1} "):
+            if not line.startswith(f"{index + 1}. "):
                 return "paragraph"
         return "ordered list"
     return "paragraph"
