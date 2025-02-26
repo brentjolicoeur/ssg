@@ -1,7 +1,6 @@
 __pycache__/
 src/subtest.py 
 src/subtest2.py
-public/
 trials/
 move_trial/
 error.txt
