@@ -29,7 +29,28 @@ class TextNode():
         if not self.url:
             return f'TextNode("{self.text}", {self.text_type})'
         return f'TextNode({self.text}, {self.text_type.value}, {self.url})'
-    
+
+    def to_html(self):
+        # Handle different node types appropriately
+        if self.text_type == TextType.TEXT:
+            return self.text  # Basic text, e.g., <br> or plain content
+        elif self.text_type == TextType.BOLD:
+            return f"<b>{self.text}</b>"
+        elif self.text_type == TextType.ITALIC:
+            return f"<i>{self.text}</i>"
+        elif self.text_type == TextType.CODE:
+            return f"<code>{self.text}</code>"
+        elif self.text_type == TextType.LINK:
+            if not self.url:
+                raise ValueError("URL is required for text type LINK")
+            return f'<a href="{self.url}">{self.text}</a>'
+        elif self.text_type == TextType.IMAGE:
+            if not self.url:
+                raise ValueError("URL is required for text type IMAGE")
+            return f'<img src="{self.url}" alt="{self.text}" />'
+        else:
+            raise ValueError(f"Unsupported text type: {self.text_type}")
+
 def text_node_to_html_node(text_node):
     if text_node.text_type == TextType.TEXT:
         return LeafNode(None, text_node.text)

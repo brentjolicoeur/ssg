@@ -40,14 +40,13 @@ def heading_to_html_node(block):
     return heading_block
 
 def quote_to_html_node(block):
-    quote_leafs = []
     lines = block.splitlines()
-    for line in lines:
-        text = line.lstrip('> ')
-        child_nodes = text_to_children(text)
-        quote_leafs.extend(child_nodes)
-    quote_block = ParentNode('blockquote', quote_leafs)
-    return quote_block
+
+    processed_lines = [line.lstrip('> ').strip() for line in lines if line.strip()]
+
+    content = ' '.join(processed_lines)
+
+    return ParentNode('blockquote', [TextNode(content, TextType.TEXT)])
 
 def code_to_html_node(block):
     if not block.startswith("```") or not block.endswith("```"):

@@ -82,7 +82,7 @@ def text_to_textnodes(text):
     start = [TextNode(text, TextType.TEXT)]
 
     delimited_bold = split_nodes_delimiter(start, "**", TextType.BOLD)
-    delimited_bold_italic = split_nodes_delimiter(delimited_bold, "*", TextType.ITALIC)
+    delimited_bold_italic = split_nodes_delimiter(delimited_bold, "_", TextType.ITALIC)
     delimited_all = split_nodes_delimiter(delimited_bold_italic, "`", TextType.CODE)
     delimited_all_images = split_nodes_image(delimited_all)
     delimited_all_images_links = split_nodes_link(delimited_all_images)
