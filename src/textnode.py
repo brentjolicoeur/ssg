@@ -1,4 +1,5 @@
 from enum import Enum
+from leafnode import LeafNode
 
 class TextType(Enum):
     TEXT = 'text'
@@ -10,6 +11,8 @@ class TextType(Enum):
 
 class TextNode():
     def __init__(self, text, text_type, url=None):
+        if not text:
+            raise ValueError("text is required")
         self.text = text
         if isinstance(text_type, TextType):
             self.text_type = text_type
@@ -26,3 +29,29 @@ class TextNode():
         if not self.url:
             return f"TextNode({self.text}, {self.text_type.value})"
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+    
+    def text_node_to_html_node(self):
+        if self.text_type == TextType.TEXT:
+            node = LeafNode(None, self.text)
+            return node
+        elif self.text_type == TextType.BOLD:
+            node = LeafNode("b", self.text)
+            return node
+        elif self.text_type == TextType.ITALIC:
+            node = LeafNode("i", self.text)
+            return node
+        elif self.text_type == TextType.CODE:
+            node = LeafNode("code", self.text)
+            return node
+        elif self.text_type == TextType.LINK:
+            if not self.url:
+                raise ValueError("missing url for link")
+            node = LeafNode("a", self.text, {"href":self.url})
+            return node
+        elif self.text_type == TextType.IMAGE:
+            if not self.url:
+                raise ValueError("missing url for image")
+            node = LeafNode("img", "", {"src":self.url, "alt":self.text})
+            return node
+        else:
+            raise ValueError(f"Unsupported text type: {self.text_type}")
