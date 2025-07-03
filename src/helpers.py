@@ -1,3 +1,5 @@
+import re
+
 from textnode import TextType, TextNode
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -22,4 +24,67 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         # Last item in splt will be plain text
         if splits[0] != '':  # handles edge case where delimiter is last character in node's text
             new_nodes.append(TextNode(splits[0], TextType.TEXT))
+    return new_nodes
+
+def extract_markdown_images(text):
+    images_regex = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(images_regex, text)
+    return matches
+
+def extract_markdown_links(text):
+    links_regex = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(links_regex, text)
+    return matches
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        # only splitting "text" type objects
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+        images = extract_markdown_images(node.text)
+        if not images:
+            new_nodes.append(node)
+            continue
+        working_text = node.text # get text to separate
+        for i in range(len(images)): #handles potential multiple images
+            alt_text, url = images[i][0], images[i][1]
+            split = working_text.split(f"![{alt_text}]({url})", 1) # split around image block
+            before = split.pop(0) # get text before image block
+            if before: # handles case where image block is at the start of node
+                before_node = TextNode(before, TextType.TEXT)
+                new_nodes.append(before_node)
+            image_node = TextNode(alt_text, TextType.IMAGE, url) # creates the image node
+            new_nodes.append(image_node)
+            working_text = split[0] # sets the text after the image block to continue working with if necessary
+        if working_text: # will not trigger if image block is at the end of the node's text
+            new_nodes.append(TextNode(working_text, TextType.TEXT)) # any remaining text gets appended as a text node
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        # only splitting "text" type objects
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+        links = extract_markdown_links(node.text)
+        if not links:
+            new_nodes.append(node)
+            continue
+        working_text = node.text # get text to separate
+        for i in range(len(links)): #handles potential multiple images
+            anchor_text, url = links[i][0], links[i][1]
+            split = working_text.split(f"[{anchor_text}]({url})", 1) # split around image block
+            before = split.pop(0) # get text before image block
+            if before: # handles case where image block is at the start of node
+                before_node = TextNode(before, TextType.TEXT)
+                new_nodes.append(before_node)
+            link_node = TextNode(anchor_text, TextType.LINK, url) # creates the image node
+            new_nodes.append(link_node)
+            working_text = split[0] # sets the text after the image block to continue working with if necessary
+        if working_text: # will not trigger if image block is at the end of the node's text
+            new_nodes.append(TextNode(working_text, TextType.TEXT)) # any remaining text gets appended as a text node
+
     return new_nodes
