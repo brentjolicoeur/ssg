@@ -1,6 +1,6 @@
 import unittest
 
-from helpers import markdown_to_blocks
+from helpers import markdown_to_blocks, block_to_block_type,BlockType
 
 
 class BlockMarkdown(unittest.TestCase):
@@ -77,3 +77,48 @@ Block C"""
                 "Block C",
             ],
         )
+
+class BlockToBlockType(unittest.TestCase):
+    def test_paragraph_block(self):
+        block = "This is a normal paragraph of text."
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_heading_block(self):
+        self.assertEqual(block_to_block_type("# Heading 1"), BlockType.HEADING)
+        self.assertEqual(block_to_block_type("## Heading 2"), BlockType.HEADING)
+        self.assertEqual(block_to_block_type("###### Heading 6"), BlockType.HEADING)
+
+    def test_code_block(self):
+        block = '''```python
+print("Hello, world!")
+```'''
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+
+    def test_quote_block(self):
+        block = '''> This is a quote.
+> It spans multiple lines.'''
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+
+    def test_unordered_list_block(self):
+        block = '''- Item one
+- Item two'''
+        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+
+    def test_ordered_list_block(self):
+        block = '''1. First item
+2. Second item'''
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+
+    def test_mixed_content_paragraph(self):
+        # This block looks like a list or heading but isn't
+        block = "This is not a list - because it doesn't start with a dash space."
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+        block = "Not a heading# because no space after hash."
+        self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_empty_block(self):
+        self.assertEqual(block_to_block_type(""), BlockType.PARAGRAPH)
+
+if __name__ == '__main__':
+    unittest.main()
