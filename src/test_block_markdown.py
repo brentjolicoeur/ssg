@@ -1,6 +1,7 @@
 import unittest
 
-from helpers import markdown_to_blocks, block_to_block_type,BlockType
+from markdown_funcs import markdown_to_blocks
+from textnode_helpers import block_to_block_type, BlockType
 
 
 class BlockMarkdown(unittest.TestCase):

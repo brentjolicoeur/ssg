@@ -99,14 +99,6 @@ def text_to_textnodes(text):
     final_nodes = split_nodes_link(delimited_images_nodes)
     return final_nodes
 
-def markdown_to_blocks(markdown):
-    blocks = []
-    splits = markdown.split('\n\n')
-    for split in splits:
-        if split.strip() != '':
-            blocks.append(split.strip())
-    return blocks
-
 class BlockType(Enum):
     PARAGRAPH = 'paragraph'
     HEADING = 'heading'
