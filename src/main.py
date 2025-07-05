@@ -1,9 +1,13 @@
-import os, shutil
+import os, shutil, sys
 from generate_content import generate_pages_recursive
 
 def main():
-    clear_and_copy_directory('./static', './public')
-    generate_pages_recursive('./content', './template.html', './public')
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    else:
+        basepath = '/'
+    clear_and_copy_directory('./static', './docs')
+    generate_pages_recursive('./content', './template.html', './docs', basepath)
 
 def clear_and_copy_directory(source, destination):
     if os.path.exists(destination):
