@@ -1,13 +1,14 @@
-from textnode import TextNode, TextType
+import os, shutil
+from generate_content import generate_pages_recursive
 
 def main():
-    node1 = TextNode('this is some plain text', TextType.PLAIN)
-    node2 = TextNode('this is bold text', TextType.BOLD)
-    node3 = TextNode('this is a link', TextType.LINK, 'www.google.com')
+    clear_and_copy_directory('./static', './public')
+    generate_pages_recursive('./content', './template.html', './public')
 
-    print(node1)
-    print(node2)
-    print(node3)
+def clear_and_copy_directory(source, destination):
+    if os.path.exists(destination):
+        shutil.rmtree(destination)
+    shutil.copytree(source, destination)
 
 if __name__ == "__main__":
     main()
